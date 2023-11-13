@@ -2,6 +2,8 @@ import io.papermc.paperweight.util.constants.PAPERCLIP_CONFIG
 
 plugins {
     java
+    `maven-publish`
+    id("net.linguica.maven-settings") version "0.5"
     id("com.github.johnrengelman.shadow") version "8.1.1" apply false
     id("io.papermc.paperweight.patcher") version "1.5.9"
 }
@@ -21,6 +23,8 @@ dependencies {
 
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "org.gradle.maven-publish")
+    apply(plugin = "net.linguica.maven-settings")
 
     java {
         toolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
@@ -42,6 +46,18 @@ subprojects {
         maven("https://hub.spigotmc.org/nexus/content/groups/public/")
         maven("https://jitpack.io")
     }
+
+    publishing {
+
+        publications {
+
+            repositories {
+                fyre()
+            }
+
+        }
+
+    }
 }
 
 paperweight {
@@ -59,4 +75,26 @@ paperweight {
             serverOutputDir.set(layout.projectDirectory.dir("pufferfish-server"))
         }
     }
+}
+
+fun RepositoryHandler.fyre() {
+    maven {
+        name = "fyre"
+        url = uri("https://maven.pkg.jetbrains.space/fyre/p/fyre-games/maven")
+        applyCredentials()
+    }
+}
+
+fun MavenArtifactRepository.applyCredentials() {
+
+    //TODO ehh
+    if (System.getenv().containsKey("JB_SPACE_CLIENT_ID") && System.getenv().containsKey("JB_SPACE_CLIENT_SECRET")) {
+        credentials {
+            // Automation has a special account for authentication in Space
+            // account credentials are accessible via env vars
+            username = System.getenv()["JB_SPACE_CLIENT_ID"]
+            password = System.getenv()["JB_SPACE_CLIENT_SECRET"]
+        }
+    }
+
 }

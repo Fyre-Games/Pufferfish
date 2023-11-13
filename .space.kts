@@ -1,9 +1,16 @@
 /**
-* JetBrains Space Automation
-* This Kotlin script file lets you automate build activities
-* For more info, see https://www.jetbrains.com/help/space/automation.html
-*/
+ * JetBrains Space Automation
+ * This Kotlin script file lets you automate build activities
+ * For more info, see https://www.jetbrains.com/help/space/automation.html
+ */
+job(name = "Build and Publish") {
 
-job("Hello World!") {
-    container(displayName = "Say Hello", image = "hello-world")
+    container(displayName = "compileAndPublishAll",image = "amazoncorretto:17") {
+
+        kotlinScript{api ->
+            api.gradlew(":publishMavenPublicationToFyreRepository")
+        }
+
+    }
+
 }
