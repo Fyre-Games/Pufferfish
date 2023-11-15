@@ -4,7 +4,7 @@ plugins {
     java
     `maven-publish`
     id("net.linguica.maven-settings") version "0.5"
-    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.papermc.paperweight.patcher") version "1.5.9"
 }
 
@@ -23,6 +23,7 @@ dependencies {
 
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "org.gradle.maven-publish")
     apply(plugin = "net.linguica.maven-settings")
 
@@ -51,8 +52,16 @@ subprojects {
 
         publications {
 
-            repositories {
-                fyre()
+            create<MavenPublication>("shadow") {
+
+                shadow{
+                    component(this@create)
+                }
+
+                repositories {
+                    fyre()
+                }
+
             }
 
         }
