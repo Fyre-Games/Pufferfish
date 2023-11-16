@@ -8,7 +8,7 @@ job(name = "Build and Publish") {
     container(displayName = "compileAndPublishAll",image = "amazoncorretto:17") {
 
         kotlinScript{api ->
-            api.gradlew(":publishMavenPublicationToFyreRepository")
+            api.gradlew(":publishObfuscatedPublicationToFyreRepository")
         }
 
     }
