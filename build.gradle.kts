@@ -2,10 +2,8 @@ import io.papermc.paperweight.util.constants.PAPERCLIP_CONFIG
 
 plugins {
     java
-    `maven-publish`
-    id("net.linguica.maven-settings") version "0.5"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.papermc.paperweight.patcher") version "1.5.9"
+    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
+    id("io.papermc.paperweight.patcher") version "1.7.4"
 }
 
 repositories {
@@ -16,24 +14,21 @@ repositories {
 }
 
 dependencies {
-    remapper("net.fabricmc:tiny-remapper:0.8.6:fat")
-    decompiler("net.minecraftforge:forgeflower:2.0.627.2")
+    remapper("net.fabricmc:tiny-remapper:0.10.3:fat")
+    decompiler("org.vineflower:vineflower:1.10.1")
     paperclip("io.papermc:paperclip:3.0.3")
 }
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "com.github.johnrengelman.shadow")
-    apply(plugin = "org.gradle.maven-publish")
-    apply(plugin = "net.linguica.maven-settings")
 
     java {
-        toolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
+        toolchain { languageVersion.set(JavaLanguageVersion.of(21)) }
     }
 
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
-        options.release.set(17)
+        options.release.set(21)
     }
 
     repositories {
@@ -46,26 +41,6 @@ subprojects {
         maven("https://repo.md-5.net/content/repositories/releases/")
         maven("https://hub.spigotmc.org/nexus/content/groups/public/")
         maven("https://jitpack.io")
-    }
-
-    publishing {
-
-        publications {
-
-            create<MavenPublication>("shadow") {
-
-                shadow{
-                    component(this@create)
-                }
-
-                repositories {
-                    fyre()
-                }
-
-            }
-
-        }
-
     }
 }
 
@@ -83,27 +58,12 @@ paperweight {
             apiOutputDir.set(layout.projectDirectory.dir("pufferfish-api"))
             serverOutputDir.set(layout.projectDirectory.dir("pufferfish-server"))
         }
-    }
-}
 
-fun RepositoryHandler.fyre() {
-    maven {
-        name = "fyre"
-        url = uri("https://maven.pkg.jetbrains.space/fyre/p/fyre-games/maven")
-        applyCredentials()
-    }
-}
-
-fun MavenArtifactRepository.applyCredentials() {
-
-    //TODO ehh
-    if (System.getenv().containsKey("JB_SPACE_CLIENT_ID") && System.getenv().containsKey("JB_SPACE_CLIENT_SECRET")) {
-        credentials {
-            // Automation has a special account for authentication in Space
-            // account credentials are accessible via env vars
-            username = System.getenv()["JB_SPACE_CLIENT_ID"]
-            password = System.getenv()["JB_SPACE_CLIENT_SECRET"]
+        patchTasks.register("generatedApi") {
+            isBareDirectory = true
+            upstreamDirPath = "paper-api-generator/generated"
+            patchDir = layout.projectDirectory.dir("patches/generated-api")
+            outputDir = layout.projectDirectory.dir("paper-api-generator/generated")
         }
     }
-
 }

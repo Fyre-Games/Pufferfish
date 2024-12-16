@@ -11,7 +11,7 @@ you to easily disable books, should you want to preemptively remove this
 functionality before additional exploits are found.
 
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-index 5b7fe3d6c2169d07b79a0937e889fc847962fdfe..ac56a5ba83184ee7b24b58cc25aa3d5aa953caee 100644
+index a38b96319fe39e5674b9d0009ac53cba84698e03..c84ef666a896dc0d154610e1e6360ca5def739fd 100644
 --- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 @@ -163,4 +163,13 @@ public class PufferfishConfig {
@@ -29,14 +29,14 @@ index 5b7fe3d6c2169d07b79a0937e889fc847962fdfe..ac56a5ba83184ee7b24b58cc25aa3d5a
 +	
  }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 34fcdeb0f4039f1fc6c4c8c593cc615560af1ba2..e82065aef31050f23eb5a533762346cb1b656704 100644
+index b5d5dbc50a7b8c40739a15f164ffd08fdc534f9c..a58d4a39e794bceec773edebf60af28d49076eaf 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1118,6 +1118,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -1172,6 +1172,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
  
      @Override
      public void handleEditBook(ServerboundEditBookPacket packet) {
 +        if (!gg.pufferfish.pufferfish.PufferfishConfig.enableBooks && !this.player.getBukkitEntity().hasPermission("pufferfish.usebooks")) return; // Pufferfish
-         // Paper start
-         if (!this.cserver.isPrimaryThread()) {
-             List<String> pageList = packet.getPages();
+         // Paper start - Book size limits
+         final io.papermc.paper.configuration.type.number.IntOr.Disabled pageMax = io.papermc.paper.configuration.GlobalConfiguration.get().itemValidation.bookSize.pageMax;
+         if (!this.cserver.isPrimaryThread() && pageMax.enabled()) {
