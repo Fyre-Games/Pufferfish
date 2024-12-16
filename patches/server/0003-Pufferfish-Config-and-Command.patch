@@ -5,12 +5,12 @@ Subject: [PATCH] Pufferfish Config and Command
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 177c7cc42f12150bb3b2f170c17a958442d622d2..5b3476affbe08b579cec2dd14763b2782e09da32 100644
+index 4c6a2456b4ba0d93077c1bb1695c3f68173c0b1d..5dda946f673b91ce171626a5588e2cf7a37fe23b 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -55,6 +55,13 @@ dependencies {
-     runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.7.3")
-     runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.7.3")
+@@ -60,6 +60,13 @@ dependencies {
+     runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.9.18")
+     runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.9.18")
  
 +    // Pufferfish start
 +    implementation("org.yaml:snakeyaml:1.32")
@@ -20,22 +20,8 @@ index 177c7cc42f12150bb3b2f170c17a958442d622d2..5b3476affbe08b579cec2dd14763b278
 +    // Pufferfish end
 +
      testImplementation("io.github.classgraph:classgraph:4.8.47") // Paper - mob goal test
-     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-     testImplementation("org.hamcrest:hamcrest:2.2")
-diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/co/aikar/timings/TimingsExport.java
-index a2f71a6d1a9e98133dff6cd0f625da9435a8af14..ff940e43ca35094bbcae6c7d471d3c4aeb7c1727 100644
---- a/src/main/java/co/aikar/timings/TimingsExport.java
-+++ b/src/main/java/co/aikar/timings/TimingsExport.java
-@@ -242,7 +242,8 @@ public class TimingsExport extends Thread {
-         parent.put("config", createObject(
-             pair("spigot", mapAsJSON(Bukkit.spigot().getSpigotConfig(), null)),
-             pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
--            pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null))
-+            pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfish
-+            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
-         ));
- 
-         new TimingsExport(listeners, parent, history).start();
+     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+     testImplementation("org.junit.platform:junit-platform-suite-engine:1.10.0")
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..020368da69b9a492155f6de6297f74732f4ab6ea
@@ -252,13 +238,13 @@ index 0000000000000000000000000000000000000000..deb52c185705c4b4186c7bae02f2a827
 +	
 +}
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 2b5d82fbf4e7ec32d0c53dd3e8207b1dba708bbd..ee71e2751bd3bc0053faef6b10dcf9a2928a711c 100644
+index 17a158ff6ce6520b69a5a0032ba4c05449dd0cf8..b2b5c793ede667e03581492af92943a729a33ae7 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -221,6 +221,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
-         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
-         // Paper end
+@@ -236,6 +236,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.server.spark.registerCommandBeforePlugins(this.server); // Paper - spark
+         com.destroystokyo.paper.Metrics.PaperMetrics.startMetrics(); // Paper - start metrics
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
 +        gg.pufferfish.pufferfish.PufferfishConfig.load(); // Pufferfish
 +        gg.pufferfish.pufferfish.PufferfishCommand.init(); // Pufferfish
  

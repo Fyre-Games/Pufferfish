@@ -5,18 +5,10 @@ Subject: [PATCH] Cache climbing check for activation
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index b82547637a40ae6e0adffa16d4b7cedac9360a1d..26b57d004cf9b43967dce65c75946895fb703b84 100644
+index aa4b8bc675ca8cbee5890164fa39ad59c3a3137e..e21e549e8102477aae599487acc6dd39616d6c26 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -142,7 +142,6 @@ import org.bukkit.event.entity.EntityTeleportEvent;
- import org.bukkit.event.player.PlayerItemConsumeEvent;
- // CraftBukkit end
- 
--import co.aikar.timings.MinecraftTimings; // Paper
- 
- public abstract class LivingEntity extends Entity implements Attackable {
- 
-@@ -2009,6 +2008,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2133,6 +2133,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
          return this.lastClimbablePos;
      }
  
@@ -38,15 +30,15 @@ index b82547637a40ae6e0adffa16d4b7cedac9360a1d..26b57d004cf9b43967dce65c75946895
          if (this.isSpectator()) {
              return false;
 diff --git a/src/main/java/org/spigotmc/ActivationRange.java b/src/main/java/org/spigotmc/ActivationRange.java
-index bbe4e303a66851f391a615b5a74ed5f48f38c0f8..c0333ba8e57cd284bb8ab15181da6b39d55872f9 100644
+index b39b37052face9b250538e1fbbe7efe974359553..bc525c7843b9cc0f7705c0dc6795c05f4e5b4bb1 100644
 --- a/src/main/java/org/spigotmc/ActivationRange.java
 +++ b/src/main/java/org/spigotmc/ActivationRange.java
-@@ -320,7 +320,7 @@ public class ActivationRange
+@@ -318,7 +318,7 @@ public class ActivationRange
          if ( entity instanceof LivingEntity )
          {
              LivingEntity living = (LivingEntity) entity;
--            if ( living.onClimbable() || living.jumping || living.hurtTime > 0 || living.activeEffects.size() > 0 ) // Paper
-+            if ( living.onClimableCached() || living.jumping || living.hurtTime > 0 || living.activeEffects.size() > 0 ) // Paper // Pufferfish - use cached
+-            if ( living.onClimbable() || living.jumping || living.hurtTime > 0 || living.activeEffects.size() > 0 || living.isFreezing()) // Paper
++            if ( living.onClimableCached() || living.jumping || living.hurtTime > 0 || living.activeEffects.size() > 0 || living.isFreezing() ) // Paper // Pufferfish - use cached
              {
                  return 1; // Paper
              }
